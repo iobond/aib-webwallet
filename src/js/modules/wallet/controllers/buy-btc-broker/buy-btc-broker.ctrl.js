@@ -1,12 +1,13 @@
 (function() {
     "use strict";
 
-    angular.module("blocktrail.core")
+    angular.module("blocktrail.wallet")
         .controller("BuyBTCBrokerCtrl", BuyBTCBrokerCtrl);
 
     // TODO Needs refactoring
-    function BuyBTCBrokerCtrl($scope, $state, dialogService, glideraService,
+    function BuyBTCBrokerCtrl($scope, $state, dialogService, glideraService, simplexService, activeWallet,
                               $stateParams, $q, $timeout, $interval, $translate, $filter, trackingService) {
+        var walletData = activeWallet.getReadOnlyWalletData();
 
         $scope.broker = $stateParams.broker;
         $scope.brokerNotExistent = false;
@@ -28,26 +29,27 @@
         $scope.currencies = [];
         $scope.altCurrency = {};
 
+        $scope.last_simplex_data = null;
+
         var doneTypingInterval = 200;
         var typingTimer = null;
 
         var lastPriceResponse = null;
 
-        switch ($scope.broker) {
-            case "glidera":
-                trackingService.trackEvent(trackingService.EVENTS.BUYBTC.GLIDERA_OPEN);
-                $scope.buyInput.currencyType = "USD";
-                $scope.buyInput.fiatCurrency = "USD";
-                break;
-            default:
-                return null;
-                break;
-        }
-
         var fetchBrokerService = function() {
             switch ($scope.broker) {
                 case "glidera":
+                    trackingService.trackEvent(trackingService.EVENTS.BUYBTC.GLIDERA_OPEN);
+                    $scope.buyInput.currencyType = "USD";
+                    $scope.buyInput.fiatCurrency = "USD";
                     return glideraService;
+                    break;
+                case 'simplex':
+                    trackingService.trackEvent(trackingService.EVENTS.BUYBTC.SIMPLEX_OPEN);
+                    // Depends on open
+                    $scope.buyInput.currencyType = 'BTC';
+                    $scope.buyInput.fiatCurrency = 'USD';
+                    return simplexService;
                     break;
                 default:
                     return null;
@@ -59,6 +61,13 @@
             switch ($scope.broker) {
                 case "glidera":
                     $scope.currencies = [{code: "USD", symbol: "USD"}];
+                    return true;
+                    break;
+                case "simplex":
+                    $scope.currencies = [
+                        {code: "USD", symbol: "USD"},
+                        {code: "EUR", symbol: "EUR"}
+                        ];
                     return true;
                     break;
                 default:
@@ -123,6 +132,10 @@
                                 amount: $scope.buyInput.fiatValue
                             };
 
+                            if ($scope.broker === 'simplex') {
+                                $scope.last_simplex_data = result;
+                            }
+
                             $scope.fetchingInputPrice = false;
                         });
                     });
@@ -152,6 +165,10 @@
                                 code: "BTC",
                                 amount: $scope.buyInput.btcValue
                             };
+
+                            if ($scope.broker === 'simplex') {
+                                $scope.last_simplex_data = result;
+                            }
 
                             $scope.fetchingInputPrice = false;
                         });
@@ -293,6 +310,31 @@
                                 });
                             }
                         });
+                    break;
+                case 'simplex':
+                    spinner = dialogService.spinner({title: "BUYBTC_BUYING"});
+                    $scope.last_simplex_data.payment_id = simplexService.generateUUID();
+                    $scope.last_simplex_data.identifier = walletData.identifier;
+                    return activeWallet.getNewAddress().then(function (address) {
+                        $scope.last_simplex_data.address = address;
+
+                        if ($scope.last_simplex_data) {
+                            return simplexService.issuePaymentRequest($scope.last_simplex_data).then(function (response) {
+                                console.log(response);
+                                return simplexService.initRedirect($scope.last_simplex_data).then(function () {
+                                    spinner.close();
+                                });
+                            })
+                        }
+                    }).catch(function (e) {
+                        spinner.close();
+                        console.log(e);
+                        return $cordovaDialogs.alert(
+                            'Unfortunately, buying Bitcoin is currently unavailable. Please try again later today.',
+                            $translate.instant('ERROR_TITLE_3').sentenceCase(),
+                            $translate.instant('OK')
+                        );
+                    });
                     break;
             }
         };

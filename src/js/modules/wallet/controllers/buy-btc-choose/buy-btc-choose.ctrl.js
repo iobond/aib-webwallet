@@ -1,11 +1,11 @@
 (function() {
     "use strict";
 
-    angular.module("blocktrail.core")
+    angular.module("blocktrail.wallet")
         .controller("BuyBTCChooseCtrl", BuyBTCChooseCtrl);
 
     // TODO Needs refactoring
-    function BuyBTCChooseCtrl($q, $scope, $state, _, dialogService, settingsService,
+    function BuyBTCChooseCtrl($rootScope, $q, $scope, $state, _, dialogService, settingsService,
                               $translate, glideraService, buyBTCService, $log, trackingService) {
         var settings = settingsService.getReadOnlySettingsData();
 
@@ -13,47 +13,7 @@
         // load chooseRegion from settingsService
         $scope.chooseRegion = null;
 
-        $q.all([,
-            buyBTCService.regions().then(function(regions) {
-                $scope.regions = regions;
-            }),
-            buyBTCService.usStates().then(function(usStates) {
-                $scope.usStates = usStates;
-            })
-        ]).then(function() {
-            $scope.chooseRegion = _.defaults({}, settings.buyBTCRegion, {
-                code: null,
-                name: null
-            });
-
-            return buyBTCService.regionBrokers($scope.chooseRegion.code).then(function(brokers) {
-                $scope.brokers = brokers;
-                $scope.chooseRegion.regionOk = $scope.brokers.length;
-            });
-        });
-
-        $scope.selectRegion = function(region, name) {
-            $log.debug("selectRegion: " + region + " (" + name + ")");
-            $scope.chooseRegion.code = region;
-            $scope.chooseRegion.name = name;
-
-            buyBTCService.regionBrokers($scope.chooseRegion.code).then(function(brokers) {
-                $scope.brokers = brokers;
-                $scope.chooseRegion.regionOk = $scope.brokers.length;
-
-                if ($scope.chooseRegion.regionOk) {
-                    trackingService.trackEvent(trackingService.EVENTS.BUYBTC.REGION_OK);
-                } else {
-                    trackingService.trackEvent(trackingService.EVENTS.BUYBTC.REGION_NOTOK);
-                }
-
-                var updateSettings = {
-                    buyBTCRegion: _.defaults({}, $scope.chooseRegion)
-                };
-
-                return settingsService.updateSettingsUp(updateSettings);
-            });
-        };
+        $rootScope.pageTitle = "BUYBTC";
 
         $scope.goBuyBTCState = function(broker) {
             $state.go("app.wallet.buybtc.buy", {broker: broker});

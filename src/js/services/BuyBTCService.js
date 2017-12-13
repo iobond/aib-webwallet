@@ -3,8 +3,12 @@ angular.module('blocktrail.wallet').factory(
     function(CONFIG, $log, $q, $translate, $http, $timeout, _, glideraService, launchService) {
         var SUPPORTED_BROKERS = ['glidera'];
 
+        var _providers = [
+            {code: 'SIMPLEX', name: 'SIMPLEX'}
+        ]
+
         var _regions = [
-            {code: 'NL', name: 'NETHERLANDS'}
+            // {code: 'NL', name: 'NETHERLANDS'}
         ];
         var _usStates = [
             {code: 'US-AL', name: 'Alabama'},
@@ -59,6 +63,8 @@ angular.module('blocktrail.wallet').factory(
             {code: 'US-WI', name: 'Wisconsin'},
             {code: 'US-WY', name: 'Wyoming'}
         ];
+
+        var getProviders
 
         var _brokers = [];
         var getBrokers = function() {
