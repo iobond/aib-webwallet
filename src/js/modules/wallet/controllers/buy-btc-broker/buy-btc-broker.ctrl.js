@@ -46,7 +46,6 @@
                     break;
                 case 'simplex':
                     trackingService.trackEvent(trackingService.EVENTS.BUYBTC.SIMPLEX_OPEN);
-                    // Depends on open
                     $scope.buyInput.currencyType = 'BTC';
                     $scope.buyInput.fiatCurrency = 'USD';
                     return simplexService;
@@ -86,7 +85,7 @@
                 return null;
             }
 
-            return fetchBrokerService().buyPrices(1, null).then(function(result) {
+            return fetchBrokerService().buyPrices(1, null, $scope.buyInput.fiatCurrency, false).then(function(result) {
                 $scope.priceBTC = result.total;
                 $scope.fetchingMainPrice = false;
             });
@@ -116,28 +115,29 @@
                         return;
                     }
 
-                    return fetchBrokerService().buyPrices($scope.buyInput.btcValue, null).then(function(result) {
-                        $timeout(function() {
-                            lastPriceResponse = result;
+                    return fetchBrokerService().buyPrices($scope.buyInput.btcValue, null, $scope.buyInput.fiatCurrency, false)
+                        .then(function(result) {
+                            $timeout(function() {
+                                lastPriceResponse = result;
 
-                            $scope.buyInput.fiatValue = parseFloat(result.total);
-                            if (isNaN($scope.buyInput.fiatValue)) {
-                                $scope.buyInput.fiatValue = null;
-                            }
-                            if (result.fees) $scope.buyInput.feeValue = parseFloat(result.fees);
-                            if (result.fees) $scope.buyInput.feePercentage = ($scope.buyInput.feeValue / $scope.buyInput.fiatValue) * 100;
+                                $scope.buyInput.fiatValue = parseFloat(result.total);
+                                if (isNaN($scope.buyInput.fiatValue)) {
+                                    $scope.buyInput.fiatValue = null;
+                                }
+                                if (result.fees) $scope.buyInput.feeValue = parseFloat(result.fees);
+                                if (result.fees) $scope.buyInput.feePercentage = ($scope.buyInput.feeValue / $scope.buyInput.fiatValue) * 100;
 
-                            $scope.altCurrency = {
-                                code: $scope.buyInput.fiatCurrency,
-                                amount: $scope.buyInput.fiatValue
-                            };
+                                $scope.altCurrency = {
+                                    code: $scope.buyInput.fiatCurrency,
+                                    amount: $scope.buyInput.fiatValue
+                                };
 
-                            if ($scope.broker === 'simplex') {
-                                $scope.last_simplex_data = result;
-                            }
+                                if ($scope.broker === 'simplex') {
+                                    $scope.last_simplex_data = result;
+                                }
 
-                            $scope.fetchingInputPrice = false;
-                        });
+                                $scope.fetchingInputPrice = false;
+                            });
                     });
                 } else {
                     $scope.fiatFirst = true;
@@ -150,28 +150,29 @@
                         return;
                     }
 
-                    return fetchBrokerService().buyPrices(null, $scope.buyInput.fiatValue).then(function(result) {
-                        $timeout(function() {
-                            lastPriceResponse = result;
+                    return fetchBrokerService().buyPrices(null, $scope.buyInput.fiatValue, $scope.buyInput.fiatCurrency, $scope.fiatFirst)
+                        .then(function(result) {
+                            $timeout(function() {
+                                lastPriceResponse = result;
 
-                            $scope.buyInput.btcValue = parseFloat(result.qty);
-                            if (isNaN($scope.buyInput.btcValue)) {
-                                $scope.buyInput.btcValue = null;
-                            }
-                            if (result.fees) $scope.buyInput.feeValue = parseFloat(result.fees);
-                            if (result.fees) $scope.buyInput.feePercentage = ($scope.buyInput.feeValue / $scope.buyInput.fiatValue) * 100;
+                                $scope.buyInput.btcValue = parseFloat(result.qty);
+                                if (isNaN($scope.buyInput.btcValue)) {
+                                    $scope.buyInput.btcValue = null;
+                                }
+                                if (result.fees) $scope.buyInput.feeValue = parseFloat(result.fees);
+                                if (result.fees) $scope.buyInput.feePercentage = ($scope.buyInput.feeValue / $scope.buyInput.fiatValue) * 100;
 
-                            $scope.altCurrency = {
-                                code: "BTC",
-                                amount: $scope.buyInput.btcValue
-                            };
+                                $scope.altCurrency = {
+                                    code: "BTC",
+                                    amount: $scope.buyInput.btcValue
+                                };
 
-                            if ($scope.broker === 'simplex') {
-                                $scope.last_simplex_data = result;
-                            }
+                                if ($scope.broker === 'simplex') {
+                                    $scope.last_simplex_data = result;
+                                }
 
-                            $scope.fetchingInputPrice = false;
-                        });
+                                $scope.fetchingInputPrice = false;
+                            });
                     });
                 }// else
             });
@@ -254,7 +255,6 @@
 
             switch ($scope.broker) {
                 case "glidera":
-
                     return glideraService.buyPricesUuid(btcValue, fiatValue)
                         .then(function(result) {
                             trackingService.trackEvent(trackingService.EVENTS.BUYBTC.GLIDERA_BUY_CONFIRM);
