@@ -323,10 +323,23 @@
 
                         if ($scope.last_simplex_data) {
                             return simplexService.issuePaymentRequest($scope.last_simplex_data).then(function (response) {
-                                console.log(response);
-                                return simplexService.initRedirect($scope.last_simplex_data).then(function () {
-                                    spinner.close();
-                                });
+                                return dialogService.alert({
+                                    title: $translate.instant('MSG_BUYBTC_CONFIRM_TITLE'),
+                                    body: $translate.instant('MSG_SIMPLEX_REDIRECT'),
+                                    ok: $translate.instant('OK'),
+                                    cancel: $translate.instant('CANCEL')
+                                })
+                                    .result
+                                    .then(function (dialogResult) {
+                                        if (dialogResult === 2) {
+                                            $ionicLoading.hide();
+                                            return;
+                                        }
+
+                                        return simplexService.initRedirect($scope.last_simplex_data).then(function () {
+                                            spinner.close();
+                                        });
+                                    });
                             })
                         }
                     }).catch(function (e) {
