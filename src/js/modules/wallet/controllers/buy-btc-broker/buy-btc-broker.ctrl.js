@@ -332,9 +332,9 @@
                     }).catch(function (e) {
                         spinner.close();
                         console.log(e);
-                        return $cordovaDialogs.alert(
-                            'Unfortunately, buying Bitcoin is currently unavailable. Please try again later today.',
+                        return dialogService.alert(
                             $translate.instant('ERROR_TITLE_3').sentenceCase(),
+                            'Unfortunately, buying Bitcoin is currently unavailable. Please try again later today.',
                             $translate.instant('OK')
                         );
                     });
