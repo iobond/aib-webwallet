@@ -202,7 +202,7 @@
             $scope.updateInputPrice();
 
             // Update simplex price after currency change
-            if($scope.broker == 'simplex' && currencyType !== $scope.buyInput.fiatCurrency) {
+            if($scope.broker == 'simplex') {
                 updateMainPrice();
             }
         };
@@ -332,7 +332,7 @@
                                     .result
                                     .then(function (dialogResult) {
                                         if (dialogResult === 2) {
-                                            $ionicLoading.hide();
+                                            spinner.close();
                                             return;
                                         }
 
