@@ -53,7 +53,7 @@
 
         var postData = {
             qty: simplexData.digital_money.amount,
-            fiat: simplexData.fiat_money.currency,
+            fiatType: simplexData.fiat_money.currency,
             address: simplexData.address,
             quote_id: simplexData.quote_id,
             payment_id: simplexData.payment_id,
@@ -88,8 +88,6 @@
                     return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
                 })
                 .join('&');
-
-            debugger;
 
             // TODO: This can be network agnostic, as BUY BTC is only for BTC anyways
             window.open('http://' + self._CONFIG.API_HOST + '/v1/' + networkType + '/mywallet/simplex/payment/forward?' + queryString, '_self')
