@@ -46,8 +46,6 @@
                     break;
                 case 'simplex':
                     trackingService.trackEvent(trackingService.EVENTS.BUYBTC.SIMPLEX_OPEN);
-                    $scope.buyInput.currencyType = 'BTC';
-                    $scope.buyInput.fiatCurrency = 'USD';
                     return simplexService;
                     break;
                 default:
@@ -202,6 +200,11 @@
 
             $scope.buyInput.currencyType = currencyType;
             $scope.updateInputPrice();
+
+            // Update simplex price after currency change
+            if($scope.broker == 'simplex' && currencyType !== $scope.buyInput.fiatCurrency) {
+                updateMainPrice();
+            }
         };
 
         // set default BTC

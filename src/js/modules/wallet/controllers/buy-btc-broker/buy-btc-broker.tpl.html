@@ -61,8 +61,11 @@
             </div>
 
             <div ng-if="CONFIG.DEBUG && (buyInput.btcValue || buyInput.fiatValue)">
-                <div class="pull-right">
+                <div class="pull-right" ng-show="!fetchingInputPrice">
                     {{ 'BUYBTC_INCL_FEE' | translate }} ({{ buyInput.feePercentage | number:1 }}%): {{ buyInput.fiatCurrency | toCurrencySymbol }}{{ buyInput.feeValue | number: 2 }}
+                </div>
+                <div class="text-right" ng-show="fetchingInputPrice">
+                    <loading-spinner></loading-spinner>
                 </div>
             </div>
 
