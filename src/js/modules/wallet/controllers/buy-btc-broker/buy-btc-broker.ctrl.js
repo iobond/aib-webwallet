@@ -216,6 +216,11 @@
          */
         var pollInterval;
         var init = function() {
+
+            if ($scope.broker) {
+                $scope.initializing = false;
+            }
+
             // update main price for display straight away
             updateMainPrice().then(function() {
                 $timeout(function() {
@@ -318,6 +323,7 @@
                     spinner = dialogService.spinner({title: "BUYBTC_BUYING"});
                     $scope.last_simplex_data.payment_id = simplexService.generateUUID();
                     $scope.last_simplex_data.identifier = walletData.identifier;
+
                     return activeWallet.getNewAddress().then(function (address) {
                         $scope.last_simplex_data.address = address;
 
@@ -333,18 +339,20 @@
                                     .then(function (dialogResult) {
                                         if (dialogResult === 2) {
                                             spinner.close();
-                                            return;
+                                            userAborted = true;
+                                            return true;
                                         }
 
                                         return simplexService.initRedirect($scope.last_simplex_data).then(function () {
                                             spinner.close();
                                         });
+                                    }).catch(function (e) {
+                                        spinner.close();
                                     });
                             })
                         }
                     }).catch(function (e) {
                         spinner.close();
-                        console.log(e);
                         return dialogService.alert(
                             $translate.instant('ERROR_TITLE_3').sentenceCase(),
                             'Unfortunately, buying Bitcoin is currently unavailable. Please try again later today.',

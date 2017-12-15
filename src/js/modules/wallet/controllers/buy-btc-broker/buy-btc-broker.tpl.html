@@ -71,7 +71,11 @@
 
             <div class="row">
                 <div class="col-xs-12">
-                    <button class="btn btn-lg btn-default btn-primary" ng-click="buyBTC()">{{ 'BUYBTC_BUY' | translate }}</button>
+                    <button
+                        class="btn btn-lg btn-default btn-primary"
+                        ng-click="buyBTC()"
+                        ng-disabled="fetchingInputPrice || fetchingMainPrice"
+                    >{{ 'BUYBTC_BUY' | translate }}</button>
                     <p class="buybtc-via">
                         <span class="sentence-case"
                               translate="BUYBTC_VIA"
