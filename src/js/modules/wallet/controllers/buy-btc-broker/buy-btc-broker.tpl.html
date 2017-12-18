@@ -63,8 +63,17 @@
             <!-- Error message display -->
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="help-block" ng-if="errorMsg">
+                    <div class="help-block text-right" ng-if="errorMsg">
                         {{ errorMsg }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display quote id -->
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="help-block text-right" ng-if="last_simplex_data.quote_id">
+                        {{ 'QUOTE_ID' | translate }}: {{ last_simplex_data.quote_id }}
                     </div>
                 </div>
             </div>
