@@ -29,6 +29,7 @@
         $scope.currencies = [];
         $scope.altCurrency = {};
 
+        $scope.errorMsg = null;
         $scope.last_simplex_data = null;
 
         var doneTypingInterval = 200;
@@ -101,6 +102,7 @@
         $scope.updateInputPrice = function() {
             return $q.when(true).then(function() {
                 $scope.fetchingInputPrice = true;
+                $scope.errorMsg = null; // reset last error
 
                 if ($scope.buyInput.currencyType === "BTC") {
                     $scope.fiatFirst = false;
@@ -116,8 +118,6 @@
                     return fetchBrokerService().buyPrices($scope.buyInput.btcValue, null, $scope.buyInput.fiatCurrency, false)
                         .then(function(result) {
                             $timeout(function() {
-                                lastPriceResponse = result;
-
                                 $scope.buyInput.fiatValue = parseFloat(result.total);
                                 if (isNaN($scope.buyInput.fiatValue)) {
                                     $scope.buyInput.fiatValue = null;
@@ -135,6 +135,11 @@
                                 }
 
                                 $scope.fetchingInputPrice = false;
+
+                                // simplex error handling
+                                if (result["error"]) {
+                                    $scope.errorMsg = result["error"];
+                                }
                             });
                     });
                 } else {
@@ -151,8 +156,6 @@
                     return fetchBrokerService().buyPrices(null, $scope.buyInput.fiatValue, $scope.buyInput.fiatCurrency, $scope.fiatFirst)
                         .then(function(result) {
                             $timeout(function() {
-                                lastPriceResponse = result;
-
                                 $scope.buyInput.btcValue = parseFloat(result.qty);
                                 if (isNaN($scope.buyInput.btcValue)) {
                                     $scope.buyInput.btcValue = null;
@@ -170,6 +173,11 @@
                                 }
 
                                 $scope.fetchingInputPrice = false;
+
+                                // simplex error handling
+                                if (result["error"]) {
+                                    $scope.errorMsg = result["error"];
+                                }
                             });
                     });
                 }// else

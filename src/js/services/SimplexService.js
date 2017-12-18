@@ -37,6 +37,10 @@
 
         return sdk.simplexBuyPrices(qty, fiat, fiatType, fiatFirst)
             .then(function(response) {
+                if (response.error) {
+                    return response;
+                }
+
                 response.qty = response.digital_money.amount;
                 response.total = response.fiat_money.total_amount;
                 response.fees = response.fiat_money.total_amount - response.fiat_money.base_amount;
