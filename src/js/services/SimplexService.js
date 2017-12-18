@@ -54,7 +54,7 @@
         var postData = {
             qty: simplexData.digital_money.amount,
             fiat: simplexData.fiat_money.base_amount,
-            fiatType: simplexData.fiat_money.currency,
+            fiat_type: simplexData.fiat_money.currency,
             address: simplexData.address,
             quote_id: simplexData.quote_id,
             payment_id: simplexData.payment_id,

@@ -339,7 +339,6 @@
                                     .then(function (dialogResult) {
                                         if (dialogResult === 2) {
                                             spinner.close();
-                                            userAborted = true;
                                             return true;
                                         }
 

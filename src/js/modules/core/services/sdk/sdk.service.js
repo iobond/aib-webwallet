@@ -213,8 +213,8 @@
             return self.client.get("/mywallet/simplex/prices/quote", {
                 qty: qty,
                 fiat: fiat,
-                fiatType: fiatType,
-                fiatFirst: fiatFirst,
+                fiat_type: fiatType,
+                fiat_first: fiatFirst,
                 platform: 'web'});
         };
 
