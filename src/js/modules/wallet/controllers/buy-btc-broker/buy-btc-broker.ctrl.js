@@ -64,7 +64,9 @@
                 case "simplex":
                     $scope.currencies = [
                         {code: "USD", symbol: "USD"},
-                        {code: "EUR", symbol: "EUR"}
+                        {code: "EUR", symbol: "EUR"},
+                        {code: "GBP", symbol: "GBP"},
+                        {code: "CAD", symbol: "CAD"}
                         ];
                     return true;
                     break;
