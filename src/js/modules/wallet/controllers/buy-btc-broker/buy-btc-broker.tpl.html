@@ -89,10 +89,21 @@
 
             <div class="row">
                 <div class="col-xs-12">
+                    <span>
+                        <input type="checkbox" ng-model="termsAccepted">
+                        I accept the
+                        <a href="https://www.simplex.com/terms-of-use/">terms of use</a> and
+                        <a href="https://www.simplex.com/privacy-policy/">privacy policy</a>.
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
                     <button
                         class="btn btn-lg btn-default btn-primary"
                         ng-click="buyBTC()"
-                        ng-disabled="fetchingInputPrice || fetchingMainPrice"
+                        ng-disabled="fetchingInputPrice || fetchingMainPrice || !termsAccepted"
                     >{{ 'BUYBTC_BUY' | translate }}</button>
                     <p class="buybtc-via">
                         <span class="sentence-case"

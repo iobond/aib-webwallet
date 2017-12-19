@@ -29,6 +29,8 @@
         $scope.currencies = [];
         $scope.altCurrency = {};
 
+        $scope.termsAccepted = false;
+
         $scope.errorMsg = null;
         $scope.last_simplex_data = null;
 
