@@ -61,6 +61,7 @@
             fiat_type: simplexData.fiat_money.currency,
             address: simplexData.address,
             quote_id: simplexData.quote_id,
+            order_id: simplexData.order_id,
             payment_id: simplexData.payment_id,
             platform: 'web'
         };
