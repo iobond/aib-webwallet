@@ -46,6 +46,7 @@
             hideBCCSweepWarning: false,
 
             buyBTCRegion: null,
+            simplexLastForward: null,
 
             registerURIHandlerExecuted: false,
             registerURIHandlerNotifyCounter: 0,

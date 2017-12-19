@@ -5,7 +5,7 @@
         .controller("BuyBTCBrokerCtrl", BuyBTCBrokerCtrl);
 
     // TODO Needs refactoring
-    function BuyBTCBrokerCtrl($scope, $state, dialogService, glideraService, simplexService, activeWallet,
+    function BuyBTCBrokerCtrl($scope, $state, dialogService, glideraService, simplexService, activeWallet, settingsService,
                               $stateParams, $q, $timeout, $interval, $translate, $filter, trackingService) {
         var walletData = activeWallet.getReadOnlyWalletData();
 
@@ -35,8 +35,6 @@
         var doneTypingInterval = 200;
         var typingTimer = null;
 
-        var lastPriceResponse = null;
-
         var fetchBrokerService = function() {
             switch ($scope.broker) {
                 case "glidera":
@@ -64,10 +62,8 @@
                 case "simplex":
                     $scope.currencies = [
                         {code: "USD", symbol: "USD"},
-                        {code: "EUR", symbol: "EUR"},
-                        {code: "GBP", symbol: "GBP"},
-                        {code: "CAD", symbol: "CAD"}
-                        ];
+                        {code: "EUR", symbol: "EUR"}
+                    ];
                     return true;
                     break;
                 default:
@@ -331,36 +327,48 @@
                     break;
                 case 'simplex':
                     spinner = dialogService.spinner({title: "BUYBTC_BUYING"});
-                    $scope.last_simplex_data.payment_id = simplexService.generateUUID();
-                    $scope.last_simplex_data.identifier = walletData.identifier;
+
+                    // Generate local simplex data object
+                    var simplexData = {};
+                    // Make a snapshot of the current simplex data
+                    simplexData = angular.copy($scope.last_simplex_data);
+                    // Set payment id and identifier
+                    simplexData.payment_id = simplexService.generateUUID();
+                    simplexData.identifier = walletData.identifier;
 
                     return activeWallet.getNewAddress().then(function (address) {
-                        $scope.last_simplex_data.address = address;
+                        // Set address and generate an order id
+                        simplexData.address = address;
+                        simplexData.order_id = simplexService.generateUUID();
 
-                        if ($scope.last_simplex_data) {
-                            return simplexService.issuePaymentRequest($scope.last_simplex_data).then(function (response) {
-                                return dialogService.alert({
-                                    title: $translate.instant('MSG_BUYBTC_CONFIRM_TITLE'),
-                                    body: $translate.instant('MSG_SIMPLEX_REDIRECT'),
-                                    ok: $translate.instant('OK'),
-                                    cancel: $translate.instant('CANCEL')
-                                })
-                                    .result
-                                    .then(function (dialogResult) {
-                                        if (dialogResult === 2) {
-                                            spinner.close();
-                                            return true;
-                                        }
+                        return simplexService.issuePaymentRequest(simplexData).then(function (response) {
+                            return dialogService.alert({
+                                title: $translate.instant('MSG_BUYBTC_CONFIRM_TITLE'),
+                                body: $translate.instant('MSG_SIMPLEX_REDIRECT', {'orderId' : simplexData.order_id}),
+                                ok: $translate.instant('OK'),
+                                cancel: $translate.instant('CANCEL')
+                            })
+                                .result
+                                .then(function (dialogResult) {
+                                    if (dialogResult === 2) {
+                                        spinner.close();
+                                        return true;
+                                    }
 
-                                        return simplexService.initRedirect($scope.last_simplex_data).then(function () {
+                                    // Remember the time when the user went to simplex
+                                    settingsService.updateSettingsUp({
+                                        'simplexLastForward': ((new Date()).getTime() / 1000).toFixed(0)
+                                    })
+                                        .then(simplexService.initRedirect(simplexData))
+                                        .then(function () {
                                             spinner.close();
                                         });
-                                    }).catch(function (e) {
-                                        spinner.close();
-                                    });
-                            })
-                        }
+                                }).catch(function (e) {
+                                    spinner.close();
+                                });
+                        })
                     }).catch(function (e) {
+                        console.log(e);
                         spinner.close();
                         return dialogService.alert(
                             $translate.instant('ERROR_TITLE_3').sentenceCase(),
