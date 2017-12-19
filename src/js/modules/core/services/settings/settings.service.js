@@ -47,6 +47,7 @@
 
             buyBTCRegion: null,
             simplexLastForward: null,
+            simplexLastForwardDelta: 30, // 30 seconds
 
             registerURIHandlerExecuted: false,
             registerURIHandlerNotifyCounter: 0,

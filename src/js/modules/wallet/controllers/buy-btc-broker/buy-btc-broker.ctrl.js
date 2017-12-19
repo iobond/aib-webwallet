@@ -6,7 +6,7 @@
 
     // TODO Needs refactoring
     function BuyBTCBrokerCtrl($scope, $state, dialogService, glideraService, simplexService, activeWallet, settingsService,
-                              $stateParams, $q, $timeout, $interval, $translate, $filter, trackingService) {
+                              $stateParams, $q, $timeout, $interval, $translate, $filter, trackingService, NotificationsService) {
         var walletData = activeWallet.getReadOnlyWalletData();
 
         $scope.broker = $stateParams.broker;
@@ -34,6 +34,9 @@
 
         var doneTypingInterval = 200;
         var typingTimer = null;
+
+        // Check if the user returned within seconds
+        NotificationsService.checkAndPromptSimplex();
 
         var fetchBrokerService = function() {
             switch ($scope.broker) {
