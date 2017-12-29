@@ -1,6 +1,6 @@
-# Blocktrail Web Wallet
-Take back control of your Bitcoin!  
-BlockTrail's Bitcoin wallet features unparalleled security through MultiSignature technology, keeping you in full control of your coins at all time. 
+# AIB Web Wallet
+Take back control of your AIB!  
+AIB's wallet features unparalleled security through MultiSignature technology, keeping you in full control of your coins at all time. 
 Transactions are signed in your browser so we never see your private keys.
 
 With our HD wallets you can create an unlimited number of addresses to help protect your privacy without the need for multiple private key backups. 
@@ -20,7 +20,7 @@ Access your wallet anywhere, anytime; use the mobile app when you're on the go, 
 - Local currency display using live price updates
 
 ## Mobile Wallet
-For the Mobile Wallet see; https://github.com/blocktrail/blocktrail-wallet
+coming soon ...
 
 ## Install
 ```
@@ -39,8 +39,7 @@ serve # now you can visit http://localhost:3000
 ```
 
 ## Translations
-Translations for both Web and Mobile Wallet are kept in: https://github.com/blocktrail/blocktrail-wallet-translations  
-And then submoduled into the projects.  
+coming soon ...
 
 Keep this in mind when adding / updating translations, don't forget to commit them to the translations repo.  
 
